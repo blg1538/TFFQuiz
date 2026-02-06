@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tobacco Free Florida Acronyms and Initialisms Quiz</title>
+  <style>
+    :root{ --ok:#16a34a; --bad:#b00020; --info:#2563eb; --bg:#f7f9fc; --card:#fff; --text:#0f172a; --muted:#64748b; --border:#e5e7eb; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--text);background:var(--bg)}
+    .container{max-width:1200px;margin:24px auto 96px;padding:0 16px}
+    header{margin-bottom:8px}
+    h1{margin:0 0 6px;font-size:clamp(22px,3vw,34px);font-weight:800;letter-spacing:-.02em}
+    .subtitle{color:var(--muted);margin:0 0 16px}
+    .guessbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px}
+    .guessbar input[type=text]{flex:1 1 320px;height:38px;padding:8px 10px;border:1px solid var(--border);border-radius:8px}
+    .guessbar input[type=text]:focus{border-color:var(--info)}
+    .btn{appearance:none;border:1px solid var(--border);background:#fff;color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+    .btn.primary{background:var(--info);border-color:var(--info);color:#fff}
+    .btn:hover{filter:brightness(.98)}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+    .chip{display:inline-flex;align-items:center;gap:6px;background:#eef2ff;color:#334155;border:1px solid #c7d2fe;padding:6px 10px;border-radius:999px;font-size:13px}
+    .chip .x{cursor:pointer;color:#334155b3}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .card h2{margin:0 0 8px;font-size:18px}
+    .letters{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+    .letter{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center}
+    .prompt{display:flex;align-items:center;justify-content:center;padding:0 8px;min-width:44px;height:36px;border:1px solid var(--border);background:#f9fafb;border-radius:8px;font-weight:800}
+    .slot{height:36px;border:1px dashed var(--border);border-radius:8px;display:flex;align-items:center;padding:0 10px;font-size:14px;color:#94a3b8}
+    .slot.correct{border:1px solid #86efac;background:#ecfdf5;color:#065f46;font-weight:700}
+    .meta{margin-top:10px;font-size:13px;color:#64748b}
+    .meta .full{display:none;margin-top:4px}
+    .meta.solved .full{display:block;color:#334155}
+    .meta.solved .tag{display:inline-block;background:#dcfce7;border:1px solid #86efac;color:#166534;padding:2px 8px;border-radius:999px;margin-right:6px;font-weight:700}
+    .scorebar{position:sticky;bottom:0;background:rgba(255,255,255,.92);backdrop-filter:saturate(140%) blur(6px);border-top:1px solid var(--border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .pill{background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;padding:4px 10px;border-radius:999px;font-weight:800;font-size:13px}
+    .helper{color:#64748b;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Tobacco Free Florida Acronyms and Initialisms Quiz</h1>
+      <p class="subtitle">Type a word once (e.g., <em>Florida</em>) and every matching slot across all acronyms fills in automatically. Case and punctuation don’t matter.</p>
+    </header>
+
+    <div class="guessbar">
+      <input id="guessInput" type="text" placeholder="Type a word (e.g., Florida) and press Enter" autocomplete="off" />
+      <button id="addGuess" class="btn primary">Add</button>
+      <button id="clearGuesses" class="btn">Clear guesses</button>
+      <button id="revealAll" class="btn">Reveal all</button>
+    </div>
+    <div class="chips" id="chips"></div>
+
+    <div id="cards" class="grid"></div>
+  </div>
+
+  <div class="scorebar">
+    <div class="pill" id="scorePill">Solved letters: 0 / 0</div>
+    <div class="helper" id="scoreMsg">Start adding guesses to see progress.</div>
+  </div>
+
+<script>
+// === EXACT SAME V2 PATTERN ===
+// Using const/let, arrow functions, Set, and DOMContentLoaded, which worked on your Edge.
+
+// Accepted variants helper (syntactic sugar)
+const v = (...arr) => arr;
+
+// letterPrompt can be multi-char (e.g., 'FL' for FLATS)
+const QUIZ = [
+  { acronym:'ACS', full:'American Cancer Society', letters:[
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'C', display:'Cancer', answers:v('cancer')},
+      {prompt:'S', display:'Society', answers:v('society')},
+    ]},
+  { acronym:'ACS-CAN', full:'American Cancer Society – Civic Action Network', letters:[
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'C', display:'Cancer', answers:v('cancer')},
+      {prompt:'S', display:'Society', answers:v('society')},
+      {prompt:'C', display:'Civic', answers:v('civic')},
+      {prompt:'A', display:'Action', answers:v('action')},
+      {prompt:'N', display:'Network', answers:v('network')},
+    ]},
+  { acronym:'AHA', full:'American Heart Association', letters:[
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'H', display:'Heart', answers:v('heart')},
+      {prompt:'A', display:'Association', answers:v('association')},
+    ]},
+  { acronym:'ALA', full:'American Lung Association', letters:[
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'L', display:'Lung', answers:v('lung')},
+      {prompt:'A', display:'Association', answers:v('association')},
+    ]},
+  { acronym:'AMA', full:'American Medical Association', letters:[
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'M', display:'Medical', answers:v('medical')},
+      {prompt:'A', display:'Association', answers:v('association')},
+    ]},
+  { acronym:'BRFSS', full:'Behavioral Risk Factor Surveillance System', letters:[
+      {prompt:'B', display:'Behavioral', answers:v('behavioral','behavioural')},
+      {prompt:'R', display:'Risk', answers:v('risk')},
+      {prompt:'F', display:'Factor', answers:v('factor','factors')},
+      {prompt:'S', display:'Surveillance', answers:v('surveillance')},
+      {prompt:'S', display:'System', answers:v('system','systems')},
+    ]},
+  { acronym:'BTFF', full:'Bureau of Tobacco Free Florida', letters:[
+      {prompt:'B', display:'Bureau', answers:v('bureau')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'F', display:'Free', answers:v('free')},
+      {prompt:'F', display:'Florida', answers:v('florida')},
+    ]},
+  { acronym:'CDC', full:'U.S. Centers for Disease Control & Prevention', letters:[
+      {prompt:'C', display:'Centers', answers:v('centers')},
+      {prompt:'D', display:'Disease', answers:v('disease')},
+      {prompt:'C', display:'Control', answers:v('control')},
+    ]},
+  { acronym:'COPD', full:'Chronic Obstructive Pulmonary Disease', letters:[
+      {prompt:'C', display:'Chronic', answers:v('chronic')},
+      {prompt:'O', display:'Obstructive', answers:v('obstructive')},
+      {prompt:'P', display:'Pulmonary', answers:v('pulmonary')},
+      {prompt:'D', display:'Disease', answers:v('disease')},
+    ]},
+  { acronym:'CTFK', full:'Campaign for Tobacco-Free Kids', letters:[
+      {prompt:'C', display:'Campaign', answers:v('campaign')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'F', display:'Free', answers:v('free')},
+      {prompt:'K', display:'Kids', answers:v('kids')},
+    ]},
+  { acronym:'CTP', full:'Center for Tobacco Products', letters:[
+      {prompt:'C', display:'Center', answers:v('center','centers')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'P', display:'Products', answers:v('products','product')},
+    ]},
+  { acronym:'ENDS', full:'Electronic Nicotine Delivery Systems', letters:[
+      {prompt:'E', display:'Electronic', answers:v('electronic')},
+      {prompt:'N', display:'Nicotine', answers:v('nicotine')},
+      {prompt:'D', display:'Delivery', answers:v('delivery')},
+      {prompt:'S', display:'Systems', answers:v('systems','system')},
+    ]},
+  { acronym:'FACHC', full:'Florida Association of Community Health Centers', letters:[
+      {prompt:'F', display:'Florida', answers:v('florida')},
+      {prompt:'A', display:'Association', answers:v('association')},
+      {prompt:'C', display:'Community', answers:v('community')},
+      {prompt:'H', display:'Health', answers:v('health')},
+      {prompt:'C', display:'Centers', answers:v('centers','center')},
+    ]},
+  { acronym:'FAPA', full:'Florida Academy of Physician Assistants', letters:[
+      {prompt:'F', display:'Florida', answers:v('florida')},
+      {prompt:'A', display:'Academy', answers:v('academy')},
+      {prompt:'P', display:'Physician', answers:v('physician','physicians')},
+      {prompt:'A', display:'Assistants', answers:v('assistants','assistant')},
+    ]},
+  { acronym:'FCAAP', full:'Florida Chapter, American Academy of Physicians', letters:[
+      {prompt:'F', display:'Florida', answers:v('florida')},
+      {prompt:'C', display:'Chapter', answers:v('chapter')},
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'A', display:'Academy', answers:v('academy')},
+      {prompt:'P', display:'Physicians', answers:v('physicians','physician')},
+    ]},
+  { acronym:'FDA', full:'(US) Food and Drug Administration', letters:[
+      {prompt:'F', display:'Food', answers:v('food')},
+      {prompt:'D', display:'Drug', answers:v('drug','drugs')},
+      {prompt:'A', display:'Administration', answers:v('administration')},
+    ]},
+  { acronym:'FDOH', full:'Florida Department Of Health', letters:[
+      {prompt:'F', display:'Florida', answers:v('florida')},
+      {prompt:'D', display:'Department', answers:v('department','dept','dept.')},
+      {prompt:'O', display:'Of', answers:v('of')},
+      {prompt:'H', display:'Health', answers:v('health')},
+    ]},
+  { acronym:'FLATS', full:'Florida Adult Tobacco Survey', letters:[
+      {prompt:'FL', display:'Florida', answers:v('florida')},
+      {prompt:'A', display:'Adult', answers:v('adult')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'S', display:'Survey', answers:v('survey')},
+    ]},
+  { acronym:'FTC', full:'Federal Trade Commission', letters:[
+      {prompt:'F', display:'Federal', answers:v('federal')},
+      {prompt:'T', display:'Trade', answers:v('trade')},
+      {prompt:'C', display:'Commission', answers:v('commission')},
+    ]},
+  { acronym:'FYTS', full:'Florida Youth Tobacco Survey', letters:[
+      {prompt:'F', display:'Florida', answers:v('florida')},
+      {prompt:'Y', display:'Youth', answers:v('youth')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'S', display:'Survey', answers:v('survey')},
+    ]},
+  { acronym:'GASO', full:'Great American Smokeout', letters:[
+      {prompt:'G', display:'Great', answers:v('great')},
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'S', display:'Smokeout', answers:v('smokeout')},
+    ]},
+  { acronym:'HCP', full:'Health Care Providers', letters:[
+      {prompt:'H', display:'Health', answers:v('health')},
+      {prompt:'C', display:'Care', answers:v('care')},
+      {prompt:'P', display:'Providers', answers:v('providers','provider')},
+    ]},
+  { acronym:'HHS', full:'(US Department of) Health & Human Services', letters:[
+      {prompt:'H', display:'Health', answers:v('health')},
+      {prompt:'H', display:'Human', answers:v('human')},
+      {prompt:'S', display:'Services', answers:v('services','service')},
+    ]},
+  { acronym:'HNB', full:'Heat Not Burn', letters:[
+      {prompt:'H', display:'Heat', answers:v('heat')},
+      {prompt:'N', display:'Not', answers:v('not')},
+      {prompt:'B', display:'Burn', answers:v('burn')},
+    ]},
+  { acronym:'MCRC', full:'Media Campaign Resource Center', letters:[
+      {prompt:'M', display:'Media', answers:v('media')},
+      {prompt:'C', display:'Campaign', answers:v('campaign')},
+      {prompt:'R', display:'Resource', answers:v('resource')},
+      {prompt:'C', display:'Center', answers:v('center','centers')},
+    ]},
+  { acronym:'MMWR', full:'Morbidity and Mortality Weekly Report', letters:[
+      {prompt:'M', display:'Morbidity', answers:v('morbidity')},
+      {prompt:'M', display:'Mortality', answers:v('mortality')},
+      {prompt:'W', display:'Weekly', answers:v('weekly')},
+      {prompt:'R', display:'Report', answers:v('report')},
+    ]},
+  { acronym:'MSA', full:'Master Settlement Agreement', letters:[
+      {prompt:'M', display:'Master', answers:v('master')},
+      {prompt:'S', display:'Settlement', answers:v('settlement')},
+      {prompt:'A', display:'Agreement', answers:v('agreement')},
+    ]},
+  { acronym:'NAATPN', full:'National African American Tobacco Prevention Network', letters:[
+      {prompt:'N', display:'National', answers:v('national')},
+      {prompt:'A', display:'African', answers:v('african')},
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'P', display:'Prevention', answers:v('prevention')},
+      {prompt:'N', display:'Network', answers:v('network')},
+    ]},
+  { acronym:'NALR', full:'Not a Lab Rat Day', letters:[
+      {prompt:'N', display:'Not', answers:v('not')},
+      {prompt:'A', display:'A', answers:v('a')},
+      {prompt:'L', display:'Lab', answers:v('lab')},
+      {prompt:'R', display:'Rat', answers:v('rat')},
+    ]},
+  { acronym:'NAQC', full:'North American Quitline Consortium', letters:[
+      {prompt:'N', display:'North', answers:v('north')},
+      {prompt:'A', display:'American', answers:v('american')},
+      {prompt:'Q', display:'Quitline', answers:v('quitline')},
+      {prompt:'C', display:'Consortium', answers:v('consortium')},
+    ]},
+  { acronym:'NHIS', full:'National Health Interview Survey', letters:[
+      {prompt:'N', display:'National', answers:v('national')},
+      {prompt:'H', display:'Health', answers:v('health')},
+      {prompt:'I', display:'Interview', answers:v('interview')},
+      {prompt:'S', display:'Survey', answers:v('survey')},
+    ]},
+  { acronym:'NIH', full:'National Institutes of Health', letters:[
+      {prompt:'N', display:'National', answers:v('national')},
+      {prompt:'I', display:'Institutes', answers:v('institutes','institute')},
+      {prompt:'H', display:'Health', answers:v('health')},
+    ]},
+  { acronym:'NRT', full:'Nicotine Replacement Therapy', letters:[
+      {prompt:'N', display:'Nicotine', answers:v('nicotine')},
+      {prompt:'R', display:'Replacement', answers:v('replacement','replace')},
+      {prompt:'T', display:'Therapy', answers:v('therapy')},
+    ]},
+  { acronym:'NYTS', full:'National Youth Tobacco Survey', letters:[
+      {prompt:'N', display:'National', answers:v('national')},
+      {prompt:'Y', display:'Youth', answers:v('youth')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'S', display:'Survey', answers:v('survey')},
+    ]},
+  { acronym:'ONP', full:'Oral Nicotine Pouches', letters:[
+      {prompt:'O', display:'Oral', answers:v('oral')},
+      {prompt:'N', display:'Nicotine', answers:v('nicotine')},
+      {prompt:'P', display:'Pouches', answers:v('pouches','pouch')},
+    ]},
+  { acronym:'OSH', full:'Office on Smoking and Health', letters:[
+      {prompt:'O', display:'Office', answers:v('office')},
+      {prompt:'S', display:'Smoking', answers:v('smoking')},
+      {prompt:'H', display:'Health', answers:v('health')},
+    ]},
+  { acronym:'PMI', full:'Philip Morris International', letters:[
+      {prompt:'P', display:'Philip', answers:v('philip','phillip')},
+      {prompt:'M', display:'Morris', answers:v('morris')},
+      {prompt:'I', display:'International', answers:v('international')},
+    ]},
+  { acronym:'PMTA', full:'Premarket Tobacco Product Application', letters:[
+      {prompt:'P', display:'Pre', answers:v('pre','pre-','pre–')},
+      {prompt:'M', display:'Market', answers:v('market')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'A', display:'Application', answers:v('application')},
+    ]},
+  { acronym:'PORT', full:'Policy, Outreach, Research & Tools', letters:[
+      {prompt:'P', display:'Policy', answers:v('policy')},
+      {prompt:'O', display:'Outreach', answers:v('outreach')},
+      {prompt:'R', display:'Research', answers:v('research')},
+      {prompt:'T', display:'Tools', answers:v('tools')},
+    ]},
+  { acronym:'POS', full:'Point Of Sale', letters:[
+      {prompt:'P', display:'Point', answers:v('point')},
+      {prompt:'O', display:'Of', answers:v('of')},
+      {prompt:'S', display:'Sale', answers:v('sale','sales')},
+    ]},
+  { acronym:'SAMHSA', full:'Substance Abuse and Mental Health Services Administration', letters:[
+      {prompt:'S', display:'Substance', answers:v('substance')},
+      {prompt:'A', display:'Abuse', answers:v('abuse')},
+      {prompt:'M', display:'Mental', answers:v('mental')},
+      {prompt:'H', display:'Health', answers:v('health')},
+      {prompt:'S', display:'Services', answers:v('services','service')},
+      {prompt:'A', display:'Administration', answers:v('administration')},
+    ]},
+  { acronym:'SGR', full:'Surgeon General Report', letters:[
+      {prompt:'S', display:'Surgeon', answers:v('surgeon')},
+      {prompt:'G', display:'General', answers:v('general',"general's",'generals')},
+      {prompt:'R', display:'Report', answers:v('report')},
+    ]},
+  { acronym:'SHS', full:'Secondhand Smoke', letters:[
+      {prompt:'S', display:'Second', answers:v('second')},
+      {prompt:'H', display:'Hand', answers:v('hand')},
+      {prompt:'S', display:'Smoke', answers:v('smoke')},
+    ]},
+  { acronym:'SOTC', full:'State Of Tobacco Control', letters:[
+      {prompt:'S', display:'State', answers:v('state')},
+      {prompt:'O', display:'Of', answers:v('of')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'C', display:'Control', answers:v('control')},
+    ]},
+  { acronym:'SWAT', full:'Students Working Against Tobacco', letters:[
+      {prompt:'S', display:'Students', answers:v('students')},
+      {prompt:'W', display:'Working', answers:v('working')},
+      {prompt:'A', display:'Against', answers:v('against')},
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+    ]},
+  { acronym:'TAC', full:'Tobacco Advisory Council', letters:[
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'A', display:'Advisory', answers:v('advisory')},
+      {prompt:'C', display:'Council', answers:v('council')},
+    ]},
+  { acronym:'TFF', full:'Tobacco Free Florida', letters:[
+      {prompt:'T', display:'Tobacco', answers:v('tobacco')},
+      {prompt:'F', display:'Free', answers:v('free')},
+      {prompt:'F', display:'Florida', answers:v('florida')},
+    ]},
+  { acronym:'TFN', full:'The Facts Now', letters:[
+      {prompt:'T', display:'The', answers:v('the')},
+      {prompt:'F', display:'Facts', answers:v('facts','fact')},
+      {prompt:'N', display:'Now', answers:v('now')},
+    ]},
+  { acronym:'VA', full:'Veterans Administration', letters:[
+      {prompt:'V', display:'Veterans', answers:v('veterans','veteran')},
+      {prompt:'A', display:'Administration', answers:v('administration')},
+    ]},
+  { acronym:'YRBSS', full:'Youth Risk Behavior Surveillance System', letters:[
+      {prompt:'Y', display:'Youth', answers:v('youth')},
+      {prompt:'R', display:'Risk', answers:v('risk')},
+      {prompt:'B', display:'Behavior', answers:v('behavior','behaviour')},
+      {prompt:'S', display:'Surveillance', answers:v('surveillance')},
+      {prompt:'S', display:'System', answers:v('system','systems')},
+    ]},
+];
+
+// === State & helpers (v2 style) ===
+const norm = s => (s||'').toString().trim().toLowerCase().replace(/[’']/g, "'").replace(/\s+/g,' ');
+let guesses = new Set();
+let revealedGlobal = false; // global reveal toggle
+
+const cards = document.getElementById('cards');
+const guessInput = document.getElementById('guessInput');
+const addGuessBtn = document.getElementById('addGuess');
+const clearGuessesBtn = document.getElementById('clearGuesses');
+const revealAllBtn = document.getElementById('revealAll');
+const chips = document.getElementById('chips');
+const scorePill = document.getElementById('scorePill');
+const scoreMsg = document.getElementById('scoreMsg');
+
+function buildUI(){
+  cards.innerHTML = '';
+  QUIZ.forEach((q, qi)=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const h = document.createElement('h2');
+    h.textContent = q.acronym;
+    card.appendChild(h);
+
+    const letters = document.createElement('div');
+    letters.className = 'letters';
+
+    q.letters.forEach((obj, li)=>{
+      const row = document.createElement('div');
+      row.className = 'letter';
+      const prompt = document.createElement('div');
+      prompt.className = 'prompt';
+      prompt.textContent = obj.prompt;
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.id = `slot_${qi}_${li}`;
+      slot.textContent = '—';
+      row.appendChild(prompt);
+      row.appendChild(slot);
+      letters.appendChild(row);
+    });
+    card.appendChild(letters);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.id = `meta_${qi}`;
+    const full = document.createElement('div');
+    full.className = 'full';
+    full.innerHTML = `<span class="tag">Solved</span><strong>Full name:</strong> ${q.full}`;
+    meta.appendChild(full);
+    card.appendChild(meta);
+
+    cards.appendChild(card);
+  });
+}
+
+function renderChips(){
+  chips.innerHTML = '';
+  [...guesses].sort().forEach(g=>{
+    const c = document.createElement('div');
+    c.className = 'chip';
+    const span = document.createElement('span'); span.textContent = g;
+    const x = document.createElement('span'); x.className='x'; x.innerHTML='✕';
+    x.title = 'Remove';
+    x.addEventListener('click', ()=>{ guesses.delete(g); renderChips(); updateMatches(); });
+    c.appendChild(span); c.appendChild(x);
+    chips.appendChild(c);
+  });
+}
+
+function updateMatches(){
+  let total = 0, solved = 0;
+  QUIZ.forEach((q, qi)=>{
+    let solvedLetters = 0;
+    q.letters.forEach((obj, li)=>{
+      total++;
+      const slot = document.getElementById(`slot_${qi}_${li}`);
+      const accepted = obj.answers.map(norm);
+      const hit = [...guesses].some(g => accepted.includes(norm(g)));
+      if(hit || revealedGlobal){
+        slot.className = 'slot correct';
+        slot.textContent = obj.display;
+        solved++; solvedLetters++;
+      }else{
+        slot.className = 'slot';
+        slot.textContent = '—';
+      }
+    });
+    const meta = document.getElementById(`meta_${qi}`);
+    if(solvedLetters === q.letters.length){
+      meta.classList.add('solved');
+    }else{
+      meta.classList.remove('solved');
+    }
+  });
+  scorePill.textContent = `Solved letters: ${solved} / ${total}`;
+  scoreMsg.textContent = solved === total ? 'Perfect! All set.' : (solved ? 'Nice! Keep going.' : 'Start adding guesses to see progress.');
+}
+
+function addGuess(text){
+  const v = norm(text);
+  if(!v) return;
+  guesses.add(v);
+  guessInput.value = '';
+  renderChips();
+  updateMatches();
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  buildUI();
+  renderChips();
+  updateMatches();
+  addGuessBtn.addEventListener('click', ()=> addGuess(guessInput.value));
+  guessInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); addGuess(guessInput.value); }});
+  clearGuessesBtn.addEventListener('click', ()=>{ guesses.clear(); renderChips(); updateMatches(); });
+  revealAllBtn.addEventListener('click', ()=>{ revealedGlobal = !revealedGlobal; revealAllBtn.textContent = revealedGlobal ? 'Hide all' : 'Reveal all'; updateMatches(); });
+});
+</script>
+</body>
+</html>
