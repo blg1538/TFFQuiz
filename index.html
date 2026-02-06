@@ -77,7 +77,7 @@
   </div>
 
 <script>
-// === v2 pattern with full list — unchanged logic, colors only via CSS variables ===
+// Colors only changed via CSS above. Logic and data follow v2 pattern.
 const v = (...arr) => arr;
 
 const QUIZ = [
@@ -201,7 +201,8 @@ const QUIZ = [
   { acronym:'GASO', full:'Great American Smokeout', letters:[
       {prompt:'G', display:'Great', answers:v('great')},
       {prompt:'A', display:'American', answers:v('american')},
-      {prompt:'S', display:'Smokeout', answers:v('smokeout')},
+      {prompt:'S', display:'Smoke', answers:v('smoke')},
+      {prompt:'O', display:'Out', answers:v('out')},
     ]},
   { acronym:'HCP', full:'Health Care Providers', letters:[
       {prompt:'H', display:'Health', answers:v('health')},
@@ -339,7 +340,7 @@ const QUIZ = [
       {prompt:'A', display:'Against', answers:v('against')},
       {prompt:'T', display:'Tobacco', answers:v('tobacco')},
     ]},
-  { acronym:'TAC', full:'Tobacco Advisory Council', letters:[
+  { acronym:'TAC', full:'Tobacco Education and Use Prevention Advisory Council', letters:[
       {prompt:'T', display:'Tobacco', answers:v('tobacco')},
       {prompt:'A', display:'Advisory', answers:v('advisory')},
       {prompt:'C', display:'Council', answers:v('council')},
